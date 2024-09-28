@@ -1,0 +1,3 @@
+list volume
+select volume 0
+remove letter d
