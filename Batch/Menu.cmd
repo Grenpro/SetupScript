@@ -25,10 +25,10 @@ IF %a%==4 gaming.cmd
 IF %a%==5 call start url.cmd
 IF %a%==6 call start officedownload365.cmd
 IF %a%==7 call start winkey.cmd
-IF %a%==8 call start powershell -executionpolicy remotesigned \Winupd\PS_WinUpdate.ps1
-IF %a%==9 call start powershell -executionpolicy remotesigned C:\Users\Public\Startupscript\NvidiaUpdater\nvidiadriver.cmd
-IF %a%==10 call start powershell -executionpolicy remotesigned C:\Image\Users\Public\Startupscript\AMDUpdater\AMDDriver.cmd
-IF %a%==11 call start C:\Users\Public\Startupscript\Batch\serverlogon.cmd
+IF %a%==8 call start powershell -executionpolicy remotesigned ..\Winupd\PS_WinUpdate.ps1
+IF %a%==9 call start powershell -executionpolicy remotesigned ..\NvidiaUpdater\nvidiadriver.cmd
+IF %a%==10 call start powershell -executionpolicy remotesigned ..\AMDUpdater\AMDDriver.cmd
+IF %a%==11 call start serverlogon.cmd
 
 
 test&cls
