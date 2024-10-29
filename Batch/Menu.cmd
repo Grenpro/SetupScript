@@ -26,7 +26,7 @@ IF %a%==6 call start powershell -executionpolicy remotesigned ..\NvidiaUpdater\n
 IF %a%==7 call start powershell -executionpolicy remotesigned ..\AMDUpdater\AMDDriver.cmd
 IF %a%==8 call start serverlogon.cmd
 IF %a%==9 call start SuperCleanerV5.cmd
-IF %a%==10 call start adwcleaner.cmd
+IF %a%==10 call start adwclean.cmd
 
 
 test&cls
