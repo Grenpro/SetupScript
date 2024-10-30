@@ -1,1 +1,1 @@
-Import-StartLayout -LayoutPath "C:\Users\Public\Startupscript\layoutmodificationnewchrome.xml" -MountPath $env:SystemDrive\
+Import-StartLayout -LayoutPath "..\layoutmodificationnewchrome.xml" -MountPath $env:SystemDrive\
