@@ -5,7 +5,7 @@ echo Please wait...
 
 timeout /T 120
 
-powershell -executionpolicy remotesigned C:\Users\Public\Startupscript\Batch\shortcuts2.ps1
+powershell -executionpolicy remotesigned shortcuts2.ps1
 
 exit
 
