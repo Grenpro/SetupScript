@@ -17,9 +17,9 @@ echo Starting Windows Update Service...
 
 timeout /T 3
 
-call start powershell -executionpolicy remotesigned C:\Users\Public\Startupscript\Winupd\PS_WinUpdate.ps1
+call start powershell -executionpolicy remotesigned ..\Winupd\PS_WinUpdate.ps1
 
-call start C:\Users\Public\Startupscript\Batch\Retimer.cmd 
+call start ..\Batch\Retimer.cmd 
 
 
 exit
