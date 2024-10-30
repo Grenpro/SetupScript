@@ -19,7 +19,7 @@ timeout /T 3
 
 call start powershell -executionpolicy remotesigned ..\Winupd\PS_WinUpdate.ps1
 
-call start ..\Batch\Retimer.cmd 
+call start "$tempFolder\SetupScript-main\Batch\Menu.cmd" 
 
 
 exit
