@@ -14,7 +14,7 @@ reg import ..\RegistryImport\AddOem.reg
 
 call start ..\Winre\removewinre2.cmd
 
-call start ..\Ninites\package.exe
+call start ..\Winget\browser.cmd
 
 call start Retimer.cmd 
 
