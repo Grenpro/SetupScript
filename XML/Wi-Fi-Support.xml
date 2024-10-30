@@ -4,7 +4,7 @@
 	<SSIDConfig>
 		<SSID>
 			<hex>537570706F7274</hex>
-			<name>Support</name>
+			<name>KristofferRobinsvei 44</name>
 		</SSID>
 	</SSIDConfig>
 	<connectionType>ESS</connectionType>
@@ -19,7 +19,7 @@
 			<sharedKey>
 				<keyType>passPhrase</keyType>
 				<protected>false</protected>
-				<keyMaterial>gOOd!netW0rk20</keyMaterial>
+				<keyMaterial>Lorenskog1017</keyMaterial>
 			</sharedKey>
 		</security>
 	</MSM>
