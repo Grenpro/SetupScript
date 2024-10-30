@@ -97,7 +97,6 @@ echo Cleaning up temporary files and folders...
 echo Cleaning up temporary files... >> "%LOGFILE%"
 
 rem Remove temporary files and folders
-rd /s /q "%USERPROFILE%\AppData\Local\Temp"
 rd /s /q "%USERPROFILE%\AppData\Local\Microsoft\Windows\Temporary Internet Files"
 rd /s /q "%USERPROFILE%\AppData\Local\Microsoft\Windows\INetCache"
 rd /s /q "%WINDIR%\Temp"
