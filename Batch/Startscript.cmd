@@ -2,7 +2,7 @@
 color 1F
 
 @echo off
-netsh wlan add profile filename="C:\Users\Public\Startupscript\XML\Wi-Fi-Support.xml"
+netsh wlan add profile filename="..\XML\Wi-Fi-Support.xml"
 
 :repeat
 timeout 5 > nul
