@@ -14,6 +14,7 @@ echo 7.Amd Driver Update
 echo 8.Mcafee and Cloud Automation
 echo 9.SuperCleanerv5
 echo 10.Adwcleaner
+echo 11.Startscript
 echo.
 
 set /p a=
@@ -27,6 +28,7 @@ IF %a%==7 call start powershell -executionpolicy remotesigned ..\AMDUpdater\AMDD
 IF %a%==8 call start serverlogon.cmd
 IF %a%==9 call start SuperCleanerV5.cmd
 IF %a%==10 call start adwclean.cmd
+IF %a%==11 call start Startscript.cmd
 
 
 test&cls
