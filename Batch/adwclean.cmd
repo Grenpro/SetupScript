@@ -12,3 +12,5 @@ echo Running downloaded file... >> "%LOGFILE%"
 
 rem Run downloaded file
 start /wait C:\adwcleaner.exe
+
+exit
