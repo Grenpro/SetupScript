@@ -37,7 +37,7 @@ call start winkey.cmd
 timeout /T 10
 
 @echo off
-@echo off F | xcopy ..\Xcopy\startup2.lnk "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\startup2.lnk" /E /H /K /X /Y
+@echo off F | xcopy ..\Xcopy\startup2.cmd "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\startup2.cmd" /E /H /K /X /Y
 
 call start ChromeLink.cmd
 
