@@ -1,5 +1,8 @@
 @echo off
 
+powercfg -change -standby-timeout-ac 0
+powercfg -change -monitor-timeout-ac 0
+
 :: Set log file path
 set LOGFILE=C:\maintenance_report.txt
 
@@ -153,6 +156,8 @@ start /wait C:\adwcleaner.exe
 echo Cleanup completed successfully. >> "%LOGFILE%"
 
 echo Cleanup complete. Please restart your computer to finish the cleanup process.
+
+call start power.cmd
 
 echo Maintenance completed. Check the report at %LOGFILE%.
 pause
