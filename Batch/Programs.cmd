@@ -1,7 +1,7 @@
 :Start
 test&cls
 @echo off
-color 1F
+color 5F
 
 echo.
 echo 1. Previous/Back
