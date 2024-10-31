@@ -15,6 +15,7 @@ echo 8. Mcafee and Cloud Automation
 echo 9. SuperCleanerv5
 echo 10. Adwcleaner
 echo 11. Startscript
+echo 12. Programs
 echo.
 
 set /p choices=Enter choices separated by space (e.g., 1 3 5): 
@@ -31,6 +32,7 @@ for %%a in (%choices%) do (
     IF %%a==9 call start SuperCleanerV5.cmd
     IF %%a==10 call start adwclean.cmd
     IF %%a==11 call start Startscript.cmd
+    IF %%a==12 call start Programs.cmd
 )
 
 test&cls
