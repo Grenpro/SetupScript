@@ -32,7 +32,7 @@ for %%a in (%choices%) do (
     IF %%a==9 call start SuperCleanerV5.cmd
     IF %%a==10 call start adwclean.cmd
     IF %%a==11 call start Startscript.cmd
-    IF %%a==12 call start Programs.cmd
+    IF %%a==12 Programs.cmd
 )
 
 test&cls
