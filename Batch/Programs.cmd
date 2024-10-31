@@ -6,7 +6,7 @@ color 1F
 echo.
 echo 1. Previous/Back
 echo 2. Game Launchers (Epic Games, Steam, EA App, Ubisoft Connect)
-echo 3. Browsers (Chrome & Firefox)
+echo 3. Browsers (Chrome, Firefox)
 echo 4. OpenOffice
 echo 5. LibreOffice
 echo 6. Discord
