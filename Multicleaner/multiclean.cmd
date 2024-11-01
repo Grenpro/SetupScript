@@ -1,3 +1,5 @@
+echo Current directory: %cd%
+
 call start apps.cmd
 
 call start cache.cmd
