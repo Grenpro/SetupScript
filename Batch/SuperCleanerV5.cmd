@@ -91,11 +91,6 @@ echo Clearing system restore points... >> "%LOGFILE%"
 vssadmin delete shadows /for=c: /oldest
 echo System restore points cleaned. >> "%LOGFILE%"
 
-echo Removing unused Windows components...
-echo Removing unused Windows components... >> "%LOGFILE%"
-dism.exe /online /disable-feature /featurename:Printing-Foundation-InternetPrinting-Client /norestart
-echo Unused components removed. >> "%LOGFILE%"
-
 echo Cleaning up temporary files and folders...
 echo Cleaning up temporary files... >> "%LOGFILE%"
 
