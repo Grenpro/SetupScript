@@ -4,8 +4,6 @@ call start ..\Multicleaner\cache.cmd
 
 call start ..\Multicleaner\cleaner.cmd
 
-call start ..\Multicleaner\components.cmd
-
 call start ..\Multicleaner\defender.cmd
 
 call start ..\Multicleaner\dism.cmd
