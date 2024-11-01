@@ -1,5 +1,3 @@
-echo Current directory: %cd%
-
 call start ..\Multicleaner\apps.cmd
 
 call start ..\Multicleaner\cache.cmd
