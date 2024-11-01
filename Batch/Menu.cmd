@@ -34,7 +34,7 @@ for %%a in (%choices%) do (
     IF %%a==10 call start adwclean.cmd
     IF %%a==11 call start Startscript.cmd
     IF %%a==12 Programs.cmd
-    IF %%a==13 ..\Multicleaner\Multiclean.cmd
+    IF %%a==13 call start ..\Multicleaner\Multiclean.cmd
 )
 
 test&cls
