@@ -18,4 +18,4 @@ call start ..\Multicleaner\services.cmd
 
 call start ..\Multicleaner\shadowclean.cmd
 
-pause
+exit
