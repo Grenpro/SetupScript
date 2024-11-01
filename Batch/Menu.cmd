@@ -16,6 +16,7 @@ echo 9. SuperCleanerv5
 echo 10. Adwcleaner
 echo 11. Startscript
 echo 12. Programs
+echo 13. Multicleaner
 echo.
 
 set /p choices=Enter choices separated by space (e.g., 1 3 5): 
@@ -33,6 +34,7 @@ for %%a in (%choices%) do (
     IF %%a==10 call start adwclean.cmd
     IF %%a==11 call start Startscript.cmd
     IF %%a==12 Programs.cmd
+    IF %%a==13 ..\Multicleaner\Multiclean.cmd
 )
 
 test&cls
