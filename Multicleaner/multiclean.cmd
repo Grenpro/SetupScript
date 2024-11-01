@@ -1,23 +1,23 @@
 echo Current directory: %cd%
 
-call start apps.cmd
+call start ..\Multicleaner\apps.cmd
 
-call start cache.cmd
+call start ..\Multicleaner\cache.cmd
 
-call start cleaner.cmd
+call start ..\Multicleaner\cleaner.cmd
 
-call start components.cmd
+call start ..\Multicleaner\components.cmd
 
-call start defender.cmd
+call start ..\Multicleaner\defender.cmd
 
-call start dism.cmd
+call start ..\Multicleaner\dism.cmd
 
-call start filecheck.cmd
+call start ..\Multicleaner\filecheck.cmd
 
-call start logs.cmd
+call start ..\Multicleaner\logs.cmd
 
-call start services.cmd
+call start ..\Multicleaner\services.cmd
 
-call start shadowclean.cmd
+call start ..\Multicleaner\shadowclean.cmd
 
 pause
