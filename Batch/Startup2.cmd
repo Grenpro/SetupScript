@@ -15,6 +15,8 @@ timeout 3 > nul
 
 echo Starting Windows Update Service...
 
+cd "%Userprofile%\AppData\Local\Temp\SetupScript\SetupScript-main\Batch\"
+
 timeout /T 3
 
 call start powershell -executionpolicy remotesigned ..\Winupd\PS_WinUpdate.ps1
