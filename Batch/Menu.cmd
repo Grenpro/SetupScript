@@ -22,7 +22,7 @@ echo.
 set /p choices=Enter choices separated by space (e.g., 1 3 5): 
 
 for %%a in (%choices%) do (
-    IF %%a==1 call start delete.ps1
+    IF %%a==1 call start powershell -executionpolicy remotesigned delete.ps1
     IF %%a==2 call start url.cmd
     IF %%a==3 call start officedownload365.cmd
     IF %%a==4 call start winkey.cmd
