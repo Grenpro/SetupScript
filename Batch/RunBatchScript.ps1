@@ -28,4 +28,3 @@ Start-Process -FilePath $menuScript -NoNewWindow -Wait
 
 # Clean up
 Remove-Item -Recurse -Force $tempFolder
-Remove-Item -Recurse -Force "C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\startup2.cmd"
