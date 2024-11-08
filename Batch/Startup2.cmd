@@ -23,5 +23,7 @@ call start powershell -executionpolicy remotesigned ..\Winupd\PS_WinUpdate.ps1
 
 call start "%Userprofile%\AppData\Local\Temp\SetupScript\SetupScript-main\Batch\Menu.cmd" 
 
+call start powershell -executionpolicy remotesigned "%Userprofile%\AppData\Local\Temp\SetupScript\SetupScript-main\Batch\chromedefault.ps1
+
 
 exit
