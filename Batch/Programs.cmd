@@ -20,7 +20,7 @@ set /p choices=Enter choices separated by space (e.g., 1 3 5):
 for %%a in (%choices%) do (
     IF %%a==1 Menu.cmd
     IF %%a==2 call start powershell -executionpolicy remotesigned gamelaunchers.ps1
-    IF %%a==3 call start ..\Winget\browser.bat
+    IF %%a==3 call start ..\Winget\browser.cmd
     IF %%a==4 winget install --id Apache.OpenOffice -e --silent
     IF %%a==5 winget install --id TheDocumentFoundation.LibreOffice -e --silent
     IF %%a==6 winget install --id Discord.Discord -e --silent
