@@ -1,16 +1,17 @@
 @echo off
-
+:: Set Power configuration to prevent sleep/hibernate during script execution
 powercfg -change -standby-timeout-ac 0
 powercfg -change -monitor-timeout-ac 0
 
 :: Set log file path
 set LOGFILE=C:\maintenance_report.txt
+set SCRIPT_START_TIME=%time%
 
 :: Create or clear the log file
-echo Maintenance Report - %date% %time% > "%LOGFILE%"
-echo =============================== >> "%LOGFILE%"
+echo Maintenance Report (Quick Version) - %date% %SCRIPT_START_TIME% > "%LOGFILE%"
+echo ======================================= >> "%LOGFILE%"
 
-:: Check for administrative privileges
+:: 1. Check for administrative privileges
 net session >nul 2>&1
 if %errorlevel% neq 0 (
     echo This script requires administrative privileges. Please run as administrator.
@@ -18,141 +19,124 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
-echo Running malware scan, please wait...
-echo Running malware scan... >> "%LOGFILE%"
-
-rem Run Windows Defender scan if available
+:: 2. Run Windows Defender Quick Scan
+echo Running malware scan (Quick Scan)...
+echo [%time%] Running Windows Defender Quick Scan... >> "%LOGFILE%"
 if exist "%ProgramFiles%\Windows Defender\mpcmdrun.exe" (
-    "%ProgramFiles%\Windows Defender\mpcmdrun.exe" -scan
-    if %errorlevel% neq 0 (
+    :: -ScanType 1 is a Quick Scan. -ScanType 2 is a Full Scan.
+    "%ProgramFiles%\Windows Defender\mpcmdrun.exe" -Scan -ScanType 1
+    if !errorlevel! neq 0 (
         echo Windows Defender scan encountered an error. >> "%LOGFILE%"
     ) else (
-        echo Malware scan completed successfully. >> "%LOGFILE%"
+        echo Quick malware scan completed successfully. >> "%LOGFILE%"
     )
 ) else (
     echo Windows Defender not found, skipping malware scan. >> "%LOGFILE%"
 )
 
-echo Scan complete.
-
-echo Running DISM to repair the image and clean the image and winsxs folders, please wait...
-echo Running DISM repair... >> "%LOGFILE%"
-
-rem Run DISM to repair the image and clean components
+:: 3. Run DISM to repair the Windows image (Essential for stability, can be slow)
+echo Running DISM to check and repair the system image...
+echo [%time%] Running DISM RestoreHealth... >> "%LOGFILE%"
 dism.exe /online /cleanup-image /restorehealth
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo DISM restorehealth encountered an error. >> "%LOGFILE%"
 ) else (
     echo DISM repair completed successfully. >> "%LOGFILE%"
 )
-dism.exe /online /cleanup-image /startcomponentcleanup
-echo DISM cleanup completed. >> "%LOGFILE%"
 
-echo DISM repair and cleanup complete.
-
-echo Running system file check, please wait...
-echo Running System File Checker... >> "%LOGFILE%"
-
-rem Run System File Checker
+:: 4. Run System File Checker (Essential for stability)
+echo Running system file check...
+echo [%time%] Running System File Checker (SFC)... >> "%LOGFILE%"
 sfc /scannow
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo SFC encountered an error. >> "%LOGFILE%"
 ) else (
     echo System file check completed successfully. >> "%LOGFILE%"
 )
 
-echo System file check complete.
+:: 5. Run CHKDSK on next reboot
+echo Scheduling disk check (CHKDSK) for the next reboot...
+echo [%time%] Scheduling CHKDSK... >> "%LOGFILE%"
+echo y | chkdsk C: /f
+echo CHKDSK for C: has been scheduled. >> "%LOGFILE%"
 
-echo Running disk cleanup, please wait...
-echo Running Disk Cleanup... >> "%LOGFILE%"
+:: 6. Clean up temporary files and caches
+echo Cleaning up temporary files, folders, and caches...
+echo [%time%] Cleaning up temporary files... >> "%LOGFILE%"
+rd /s /q "%TEMP%" >nul 2>&1
+rd /s /q "%WINDIR%\Temp" >nul 2>&1
+rd /s /q "%USERPROFILE%\AppData\Local\Microsoft\Windows\INetCache" >nul 2>&1
+:: Below are caches for Chrome, Firefox, and Edge.
+rd /s /q "%USERPROFILE%\AppData\Local\Google\Chrome\User Data\Default\Cache" >nul 2>&1
+rd /s /q "%USERPROFILE%\AppData\Local\Mozilla\Firefox\Profiles\*.default*\cache2" >nul 2>&1
+rd /s /q "%USERPROFILE%\AppData\Local\Microsoft\Edge\User Data\Default\Cache" >nul 2>&1
+echo Temporary file cleanup complete. >> "%LOGFILE%"
 
-rem Run Disk Cleanup silently
-cleanmgr.exe /sagerun:1
-echo Disk cleanup completed. >> "%LOGFILE%"
-
-echo Disk cleanup complete.
-
-echo Clearing event logs...
-echo Clearing event logs... >> "%LOGFILE%"
-for /F "tokens=*" %%G in ('wevtutil el') DO (
-    wevtutil cl "%%G"
-)
-echo Event logs cleared. >> "%LOGFILE%"
-
-echo Clearing Windows Update cache...
-echo Clearing Windows Update cache... >> "%LOGFILE%"
-net stop wuauserv
-rd /s /q "C:\Windows\SoftwareDistribution\Download"
-net start wuauserv
-echo Windows Update cache cleared. >> "%LOGFILE%"
-
-echo Clearing all but the most recent system restore point...
-echo Clearing system restore points... >> "%LOGFILE%"
+:: 7. Clear all but the most recent system restore point
+echo Clearing old system restore points...
+echo [%time%] Clearing system restore points... >> "%LOGFILE%"
 vssadmin delete shadows /for=c: /oldest
 echo System restore points cleaned. >> "%LOGFILE%"
 
-echo Cleaning up temporary files and folders...
-echo Cleaning up temporary files... >> "%LOGFILE%"
-
-rem Remove temporary files and folders
-rd /s /q "%USERPROFILE%\AppData\Local\Microsoft\Windows\Temporary Internet Files"
-rd /s /q "%USERPROFILE%\AppData\Local\Microsoft\Windows\INetCache"
-rd /s /q "%WINDIR%\Temp"
-echo Temporary file and folder cleanup complete. >> "%LOGFILE%"
-
-echo Updating installed apps using winget, please wait...
-echo Updating installed apps... >> "%LOGFILE%"
-
-rem Check if winget is available and update apps if so
-winget --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo Winget not available, skipping app updates. >> "%LOGFILE%"
-) else (
-    winget update --all
-    echo App updates completed. >> "%LOGFILE%"
-)
-
-echo App update complete.
-
-echo Resetting Windows update components, please wait...
-echo Resetting Windows Update components... >> "%LOGFILE%"
-
-rem Reset Windows Update components
+:: 8. Reset Windows Update Components
+echo Resetting Windows Update components...
+echo [%time%] Resetting Windows Update components... >> "%LOGFILE%"
 net stop wuauserv
 net stop cryptSvc
 net stop bits
 net stop msiserver
-ren C:\Windows\SoftwareDistribution SoftwareDistribution.old
-ren C:\Windows\System32\catroot2 catroot2.old
+ren C:\Windows\SoftwareDistribution SoftwareDistribution.old >nul 2>&1
+ren C:\Windows\System32\catroot2 catroot2.old >nul 2>&1
 net start wuauserv
 net start cryptSvc
 net start bits
 net start msiserver
-echo Windows update component reset complete. >> "%LOGFILE%"
+echo Windows Update component reset complete. >> "%LOGFILE%"
 
-echo Downloading file from website, please wait...
-echo Downloading file... >> "%LOGFILE%"
-
-rem Download file using PowerShell
-powershell -Command "Invoke-WebRequest -Uri 'https://adwcleaner.malwarebytes.com/adwcleaner?channel=release' -OutFile 'C:\adwcleaner.exe'"
-
-if %errorlevel% neq 0 (
-    echo Download failed. >> "%LOGFILE%"
-    exit /b
+:: 9. Update installed apps using winget (Can be slow, but good for security)
+echo Updating installed apps using winget...
+echo [%time%] Updating installed apps via winget... >> "%LOGFILE%"
+winget --version >nul 2>&1
+if !errorlevel! neq 0 (
+    echo Winget not available, skipping app updates. >> "%LOGFILE%"
+) else (
+    winget upgrade --all --silent --accept-source-agreements --accept-package-agreements
+    echo App updates completed. >> "%LOGFILE%"
 )
 
-echo Download complete.
+:: 10. Defragment and Optimize Drives
+echo Optimizing drives...
+echo [%time%] Optimizing drives... >> "%LOGFILE%"
+:: This command is safe for both SSDs (runs TRIM) and HDDs (runs Defrag).
+defrag.exe C: /O
+echo Drive optimization complete. >> "%LOGFILE%"
 
-echo Running downloaded file, please wait...
-echo Running downloaded file... >> "%LOGFILE%"
+:: 11. Download and Run AdwCleaner (Excellent for Adware/PUPs)
+echo Downloading and running AdwCleaner...
+echo [%time%] Downloading AdwCleaner... >> "%LOGFILE%"
+powershell -Command "Invoke-WebRequest -Uri 'https://adwcleaner.malwarebytes.com/adwcleaner?channel=release' -OutFile 'C:\adwcleaner.exe'"
+if not exist "C:\adwcleaner.exe" (
+    echo Download of AdwCleaner failed. >> "%LOGFILE%"
+) else (
+    echo Download complete. Running AdwCleaner silently... >> "%LOGFILE%"
+    C:\adwcleaner.exe /clean /noreboot /eula
+    echo AdwCleaner scan/clean process finished. >> "%LOGFILE%"
+)
 
-rem Run downloaded file
-start /wait C:\adwcleaner.exe
-echo Cleanup completed successfully. >> "%LOGFILE%"
+:: 12. Clear Event Logs
+echo Clearing all event logs...
+echo [%time%] Clearing event logs... >> "%LOGFILE%"
+for /F "tokens=*" %%G in ('wevtutil el') DO (wevtutil cl "%%G")
+echo Event logs cleared. >> "%LOGFILE%"
 
-echo Cleanup complete. Please restart your computer to finish the cleanup process.
+:: Final Steps
+echo =================================================================
+echo Maintenance script finished.
+echo A reboot is required to complete the cleanup and disk check.
+echo Check the report at %LOGFILE%
+echo The computer will restart in 60 seconds. Press Ctrl+C to cancel.
+echo =================================================================
+shutdown /r /t 60
 
-call start power.cmd
-
-echo Maintenance completed. Check the report at %LOGFILE%.
 pause
+exit /b
