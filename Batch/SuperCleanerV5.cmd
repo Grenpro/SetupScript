@@ -93,15 +93,21 @@ net start bits
 net start msiserver
 echo Windows Update component reset complete. >> "%LOGFILE%"
 
-:: 9. Update installed apps using winget (Can be slow, but good for security)
+:: 9. Update installed apps using winget
 echo Updating installed apps using winget...
 echo [%time%] Updating installed apps via winget... >> "%LOGFILE%"
-winget --version >nul 2>&1
-if !errorlevel! neq 0 (
-    echo Winget not available, skipping app updates. >> "%LOGFILE%"
+
+:: Define the path to winget.exe. This avoids PATH issues when running as Administrator.
+set "WINGET_PATH=%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe"
+
+:: Check if the winget executable exists at that specific path.
+if not exist "%WINGET_PATH%" (
+    echo Winget executable not found at the expected location. >> "%LOGFILE%"
+    echo Skipping app updates. >> "%LOGFILE%"
 ) else (
-    winget upgrade --all --silent --accept-source-agreements --accept-package-agreements
-    echo App updates completed. >> "%LOGFILE%"
+    echo Found winget at %WINGET_PATH%. Proceeding with updates... >> "%LOGFILE%"
+    "%WINGET_PATH%" upgrade --all --silent --accept-source-agreements --accept-package-agreements >> "%LOGFILE%" 2>&1
+    echo App updates completed (see log for details). >> "%LOGFILE%"
 )
 
 :: 10. Defragment and Optimize Drives
@@ -140,3 +146,4 @@ shutdown /r /t 60
 
 pause
 exit /b
+
