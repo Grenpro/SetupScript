@@ -3,24 +3,17 @@ try {
     Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force -ErrorAction Stop
 } catch {
     Write-Warning "Failed to set execution policy. If the script fails, run it from a terminal using:"
-    Write-Warning "powershell.e -ExecutionPolicy Bypass -File .\your_script_name.ps1"
+    Write-Warning "powershell.exe -ExecutionPolicy Bypass -File .\your_script_name.ps1"
 }
 
 # --- Script Setup ---
-
-# $PSScriptRoot is a special variable for the directory where this script is located.
-# This ensures the temp folder is created next to the script, keeping it safe from system cleaners.
-$scriptParentFolder = $PSScriptRoot
-$tempFolder = Join-Path $scriptParentFolder "SetupScript_Temp" # IMPORTANT CHANGE HERE
-
 $repoUrl = "https://github.com/Grenpro/SetupScript/archive/refs/heads/main.zip"
+$tempFolder = Join-Path $env:TEMP "SetupScript"
 $zipPath = Join-Path $tempFolder "SetupScript.zip"
 $thisScriptPath = $PSCommandPath 
 
 # --- Main Logic ---
 try {
-    Write-Host "This script will be downloaded to: $tempFolder" -ForegroundColor Cyan
-    # Ensure a clean temp folder exists
     if (Test-Path -Path $tempFolder) {
         Remove-Item -Recurse -Force $tempFolder
     }
@@ -32,25 +25,32 @@ try {
     Write-Host "Extracting files..." -ForegroundColor Green
     Expand-Archive -Path $zipPath -DestinationPath $tempFolder -Force
 
+    # Define the path to the batch script
     $menuScript = Join-Path $tempFolder "SetupScript-main\Batch\Menu.cmd"
     if (!(Test-Path $menuScript)) {
         throw "ERROR: Menu.cmd was not found after extraction. Aborting."
     }
+
+    # Get the directory where Menu.cmd is located
     $menuWorkingDirectory = Split-Path -Path $menuScript -Parent
 
     # --- Run the Interactive Menu ---
     Write-Host "Starting the menu. This script will wait for you to close the menu window." -ForegroundColor Yellow
-    Write-Host "You can now safely use the cleaner option from the menu." -ForegroundColor Yellow
+    Write-Host "When you are finished with the menu, simply close its window to continue." -ForegroundColor Yellow
     
+    # ==============================================================================
+    # THE FIX IS HERE: We added the -WorkingDirectory parameter
+    # This tells Menu.cmd to run from inside its own folder, so it can find its other scripts.
+    # ==============================================================================
     Start-Process -FilePath $menuScript -WorkingDirectory $menuWorkingDirectory -Wait
 
-    # --- After Menu.cmd is closed ---
+    # --- The script will only continue from here AFTER Menu.cmd has been closed ---
     Write-Host "`nMenu has been closed." -ForegroundColor Green
     
     $choice = Read-Host "Do you want to clean up all downloaded files and this script? (Y/N)"
 
     if ($choice -eq 'y') {
-        Write-Host "Cleaning up the temporary folder: $tempFolder"
+        Write-Host "Cleaning up downloaded files..."
         Remove-Item -Recurse -Force $tempFolder
 
         Write-Host "Staging self-destruction of this script. Goodbye!"
