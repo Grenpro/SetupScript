@@ -2,72 +2,76 @@
 try {
     Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned -Force -ErrorAction Stop
 } catch {
-    Write-Warning "Failed to set execution policy. If the script fails, run it from a terminal using:"
-    Write-Warning "powershell.exe -ExecutionPolicy Bypass -File .\your_script_name.ps1"
+    # This message is important for users who might have stricter policies.
+    Write-Warning "Could not set execution policy. This might not be an issue."
 }
 
 # --- Script Setup ---
+# We now use a stable folder on the C: drive, NOT the temp folder.
+# This prevents the cleaner from deleting itself.
+$workFolder = "C:\TempSetup"
 $repoUrl = "https://github.com/Grenpro/SetupScript/archive/refs/heads/main.zip"
-$tempFolder = Join-Path $env:TEMP "SetupScript"
-$zipPath = Join-Path $tempFolder "SetupScript.zip"
-$thisScriptPath = $PSCommandPath 
+$zipPath = Join-Path $workFolder "SetupScript.zip"
+
+Write-Host "--- Setup Initializing ---" -ForegroundColor Yellow
+Write-Host "This script will download cleaner tools to: $workFolder"
 
 # --- Main Logic ---
 try {
-    if (Test-Path -Path $tempFolder) {
-        Remove-Item -Recurse -Force $tempFolder
+    # Ensure a clean working folder exists
+    if (Test-Path -Path $workFolder) {
+        Write-Host "Removing old version of tools..."
+        Remove-Item -Recurse -Force $workFolder
     }
-    New-Item -ItemType Directory -Path $tempFolder | Out-Null
+    New-Item -ItemType Directory -Path $workFolder | Out-Null
 
     Write-Host "Downloading setup files..." -ForegroundColor Green
     Invoke-WebRequest -Uri $repoUrl -OutFile $zipPath
 
     Write-Host "Extracting files..." -ForegroundColor Green
-    Expand-Archive -Path $zipPath -DestinationPath $tempFolder -Force
+    Expand-Archive -Path $zipPath -DestinationPath $workFolder -Force
 
-    # Define the path to the batch script
-    $menuScript = Join-Path $tempFolder "SetupScript-main\Batch\Menu.cmd"
+    # Define paths based on the new, stable working folder
+    $menuScript = Join-Path $workFolder "SetupScript-main\Batch\Menu.cmd"
     if (!(Test-Path $menuScript)) {
         throw "ERROR: Menu.cmd was not found after extraction. Aborting."
     }
 
-    # Get the directory where Menu.cmd is located
+    # Get the directory where Menu.cmd is located so it can find its other files
     $menuWorkingDirectory = Split-Path -Path $menuScript -Parent
 
     # --- Run the Interactive Menu ---
-    Write-Host "Starting the menu. This script will wait for you to close the menu window." -ForegroundColor Yellow
-    Write-Host "When you are finished with the menu, simply close its window to continue." -ForegroundColor Yellow
+    Write-Host "Starting the menu. This script will wait for you to close the menu window." -ForegroundColor Cyan
+    Write-Host "When you are finished, simply close the menu window to continue." -ForegroundColor Cyan
     
-    # ==============================================================================
-    # THE FIX IS HERE: We added the -WorkingDirectory parameter
-    # This tells Menu.cmd to run from inside its own folder, so it can find its other scripts.
-    # ==============================================================================
+    # Run the menu from its own directory so all its sub-scripts work correctly
     Start-Process -FilePath $menuScript -WorkingDirectory $menuWorkingDirectory -Wait
 
-    # --- The script will only continue from here AFTER Menu.cmd has been closed ---
+    # --- The script only continues from here AFTER Menu.cmd has been closed ---
     Write-Host "`nMenu has been closed." -ForegroundColor Green
     
-    $choice = Read-Host "Do you want to clean up all downloaded files and this script? (Y/N)"
+    # Prompt the user for cleanup action
+    $choice = Read-Host "Do you want to clean up the downloaded tools from '$workFolder'? (Y/N)"
 
     if ($choice -eq 'y') {
-        Write-Host "Cleaning up downloaded files..."
-        Remove-Item -Recurse -Force $tempFolder
-
-        Write-Host "Staging self-destruction of this script. Goodbye!"
-        $command = "ping 127.0.0.1 -n 4 > nul & del `"$thisScriptPath`""
-        Start-Process cmd.exe -ArgumentList "/c $command" -WindowStyle Hidden
+        Write-Host "Cleaning up the tools folder: $workFolder"
+        # The only cleanup needed is to remove the folder we created.
+        # There is no script file to self-destruct because you used irm | iex.
+        Remove-Item -Recurse -Force $workFolder
+        Write-Host "Cleanup complete. Goodbye!"
     
     } else {
-        Write-Host "Cleanup skipped. The files are located in:" -ForegroundColor Yellow
-        Write-Host "$tempFolder" -ForegroundColor Cyan
-        Write-Host "You can delete that folder and this script manually when you are done." -ForegroundColor Yellow
+        Write-Host "Cleanup skipped. The tools are located in:" -ForegroundColor Yellow
+        Write-Host "$workFolder" -ForegroundColor Cyan
+        Write-Host "You can delete that folder manually when you are done." -ForegroundColor Yellow
     }
 
 } catch {
     Write-Error "An error occurred: $_"
-    if (Test-Path -Path $tempFolder) {
-        Write-Warning "Attempting to clean up temporary folder due to error..."
-        Remove-Item -Recurse -Force $tempFolder
+    # Even on error, we can offer to clean up the partial mess
+    if (Test-Path -Path $workFolder) {
+        Write-Warning "Attempting to clean up '$workFolder' due to error..."
+        Remove-Item -Recurse -Force $workFolder
     }
     Read-Host "Press Enter to exit."
 }
