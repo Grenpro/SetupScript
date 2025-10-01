@@ -15,6 +15,7 @@ echo 8. Adwcleaner
 echo 9. Startscript
 echo 10. Programs
 echo 11. Multicleaner
+echo 12. Calling Card
 echo.
 
 set /p choices=Enter choices separated by space (e.g., 1 3 5): 
@@ -31,10 +32,12 @@ for %%a in (%choices%) do (
     IF %%a==9 call start Startscript.cmd
     IF %%a==10 Programs.cmd
     IF %%a==11 call start ..\Multicleaner\Multiclean.cmd
+    IF %%a==12 call start callingcard.cmd
 )
 
 test&cls
 GOTO Start
+
 
 
 
