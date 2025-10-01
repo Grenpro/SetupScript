@@ -16,6 +16,7 @@ echo 9. Startscript
 echo 10. Programs
 echo 11. Multicleaner
 echo 12. Calling Card
+echo 13. Cloud Autoinstaller
 echo.
 
 set /p choices=Enter choices separated by space (e.g., 1 3 5): 
@@ -33,10 +34,12 @@ for %%a in (%choices%) do (
     IF %%a==10 Programs.cmd
     IF %%a==11 call start ..\Multicleaner\Multiclean.cmd
     IF %%a==12 call start callingcard.cmd
+    IF %%a==13 call start jottaauto.cmd
 )
 
 test&cls
 GOTO Start
+
 
 
 
