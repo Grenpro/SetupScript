@@ -15,15 +15,16 @@ timeout 3 > nul
 
 echo Starting Windows Update Service...
 
-cd "%Userprofile%\AppData\Local\Temp\SetupScript\SetupScript-main\Batch\"
+cd "C:\TempSetup"
 
 timeout /T 3
 
 call start powershell -executionpolicy remotesigned ..\Winupd\PS_WinUpdate.ps1
 
-call start "%Userprofile%\AppData\Local\Temp\SetupScript\SetupScript-main\Batch\Menu.cmd" 
+call start "C:\TempSetup\SetupScript-main\Batch\Menu.cmd" 
 
-call start powershell -executionpolicy remotesigned "%Userprofile%\AppData\Local\Temp\SetupScript\SetupScript-main\Batch\chromedefault.ps1
+call start powershell -executionpolicy remotesigned "C:\TempSetup\SetupScript-main\Batch\chromedefault.ps1
 
 
 exit
+
