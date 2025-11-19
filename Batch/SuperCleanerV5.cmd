@@ -1,4 +1,6 @@
 @echo off
+setlocal EnableDelayedExpansion
+
 :: Set Power configuration to prevent sleep/hibernate during script execution
 powercfg -change -standby-timeout-ac 0
 powercfg -change -monitor-timeout-ac 0
@@ -13,7 +15,7 @@ echo ======================================= >> "%LOGFILE%"
 
 :: 1. Check for administrative privileges
 net session >nul 2>&1
-if %errorlevel% neq 0 (
+if !errorlevel! neq 0 (
     echo This script requires administrative privileges. Please run as administrator.
     pause
     exit /b
@@ -97,17 +99,21 @@ echo Windows Update component reset complete. >> "%LOGFILE%"
 echo Updating installed apps using winget...
 echo [%time%] Updating installed apps via winget... >> "%LOGFILE%"
 
-:: Define the path to winget.exe. This avoids PATH issues when running as Administrator.
-set "WINGET_PATH=%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe"
-
-:: Check if the winget executable exists at that specific path.
-if not exist "%WINGET_PATH%" (
-    echo Winget executable not found at the expected location. >> "%LOGFILE%"
-    echo Skipping app updates. >> "%LOGFILE%"
+:: Try to find winget in PATH first, then fallback to LocalAppData
+where winget >nul 2>&1
+if !errorlevel! equ 0 (
+    echo Found winget in PATH. >> "%LOGFILE%"
+    winget upgrade --all --silent --accept-source-agreements --accept-package-agreements >> "%LOGFILE%" 2>&1
+    echo App updates completed. >> "%LOGFILE%"
 ) else (
-    echo Found winget at %WINGET_PATH%. Proceeding with updates... >> "%LOGFILE%"
-    "%WINGET_PATH%" upgrade --all --silent --accept-source-agreements --accept-package-agreements >> "%LOGFILE%" 2>&1
-    echo App updates completed (see log for details). >> "%LOGFILE%"
+    set "WINGET_PATH=%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe"
+    if exist "!WINGET_PATH!" (
+        echo Found winget at "!WINGET_PATH!". >> "%LOGFILE%"
+        "!WINGET_PATH!" upgrade --all --silent --accept-source-agreements --accept-package-agreements >> "%LOGFILE%" 2>&1
+        echo App updates completed. >> "%LOGFILE%"
+    ) else (
+        echo Winget executable not found. Skipping updates. >> "%LOGFILE%"
+    )
 )
 
 :: 10. Defragment and Optimize Drives
